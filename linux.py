@@ -1,31 +1,20 @@
 from subprocess import run
-import datetime
+from datetime import datetime, date, time
 
-
-
-def  run_console(command, key):
+def run_console(command, key):
     return run([command, key], capture_output=True).stdout
 
-
-with open('proccess', 'w') as ps_aux:
-    stdout = run_console('ps', 'aux').decode()
-    ps_aux.write(stdout)
-
+stdout = run_console('ps', 'aux').decode()
 
 def table_(stdout_data: str):
     list_parsed = []
     list_stdout = stdout_data.split('\n')
     for stroka in list_stdout:
-
         stroka = stroka.split()
         while len(stroka) > 11:
             stroka[10] = stroka[10] + " " + stroka.pop()
         list_parsed.append(stroka)
     return list_parsed[:-1]
-
-
-# for i in table_(stdout)[:10]:
-#     print(i)
 
 def users():
     list_of_users = []
@@ -33,11 +22,10 @@ def users():
         list_of_users.append(_[0])
     return set(list_of_users)
 
-
 users = users()
 
-print(f'Пользователи системы: {users}, Процессов запущено: {len(table_(stdout))}')
-
+print(f'Пользователи системы: {users}, \n'
+      f'Процессов запущено: {len(table_(stdout))}')
 
 def count_process_by_users():
     dict_of_users = {}
@@ -49,25 +37,39 @@ def count_process_by_users():
 def memory_mb():
     memory_precent = 0
     process = 0.0
+    name_process = ''
     for i in table_(stdout)[1:]:
         memory_precent = float(i[3]) + memory_precent
         if float(i[3]) > process:
             process = float(i[3])
             name_process = i[10][:20]
-    return (memory_precent / 100) * 16000, name_process
+    return round((memory_precent / 100) * 16000, 1), name_process
 
 
 def cpu():
     cpu_precent = 0
     process = 0
+    name_process = ''
     for i in table_(stdout)[1:]:
         cpu_precent = float(i[2]) + cpu_precent
         if float(i[2]) > process:
             process = float(i[2])
             name_process = i[10][:20]
-    return cpu_precent, name_process
+    return round(cpu_precent, 1), name_process
 
 
-print(f'Всего памяти используется: {memory_mb()[0]} mb Всего CPU используется: {cpu()[0]}% '
-      f'Больше всего памяти использует: {memory_mb()[1]}'
-      f' Больше всего CPU использует: {cpu()[1]}')
+print(f'Всего памяти используется: {memory_mb()[0]} mb\n'
+      f'Больше всего памяти использует: {memory_mb()[1]}\n'
+      f'Всего CPU используется: {cpu()[0]}%\n'
+      f'Больше всего CPU использует: {cpu()[1]}')
+
+with open(f'{datetime.now()}-scan.txt', 'w') as scan:
+    scan.write(
+                f'Пользователи системы: {users}, \n'
+                f'Процессов запущено: {len(table_(stdout))}'
+                f'Всего памяти используется: {memory_mb()[0]} mb\n'
+                f'Больше всего памяти использует: {memory_mb()[1]}\n'
+                f'Всего CPU используется: {cpu()[0]}%\n'
+                f'Больше всего CPU использует: {cpu()[1]}'
+    )
+

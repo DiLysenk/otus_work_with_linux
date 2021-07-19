@@ -1,3 +1,4 @@
 *scan.txt
 /.venv/
 /.idea/
+server.py

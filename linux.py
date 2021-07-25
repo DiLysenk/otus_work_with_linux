@@ -8,8 +8,6 @@ def run_console(command, key):
 
 stdout = run_console('ps', '-aux').decode()
 
-with open('ps_out_zeroes-1801-5ac30b', 'r') as stdout:
-    read = stdout.read()
 
 def table_(stdout_data: str):
     """Парсин все таблицы и предоставление результата в как строка = список"""
@@ -26,7 +24,7 @@ def table_(stdout_data: str):
         return list_parsed[1:-1]
 
 
-parsed_table = table_(read)
+parsed_table = table_(stdout)
 
 
 def users(parsed_table):
